@@ -68,6 +68,8 @@ Example Playbooks to sync my preferred dotfiles:
       become: no
       when: ansible_facts['distribution_release']=='bionic'
 
+      # Note: bionic keeps the same environment variables as the original user when you use `sudo`, so there's no specific need to run this again for root.
+
 ```
 
 `~/playbooks/yadm-pull.yml`:
