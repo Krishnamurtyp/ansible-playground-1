@@ -29,40 +29,45 @@ Example Playbooks to sync my preferred dotfiles:
   hosts: all
 
   tasks:
-  - name: Update repositories cache and install "git" package
-    become: yes
-    become_method: sudo
-    apt:
-      name: git
-      update_cache: no
+    - name: Update repositories cache and install "git" package
+      become: yes
+      become_method: sudo
+      apt:
+        name: git
+        update_cache: no
 
-  - name: install "yadm"
-    become: yes
-    become_method: sudo
-    apt:
-      name: yadm
+    - name: install "yadm"
+      become: yes
+      become_method: sudo
+      apt:
+        name: yadm
 
-  - name: checkout yadm repo [xenial]
-    command: yadm clone https://github.com/aaroneg/yadm-files.git
-    args:
-      creates: ~/.config/yadm/repo.git
-    become: no
-    when: ansible_facts['lsb']['codename']=='xenial'
+    - name: "Ansible | Print 'lsb_release"
+      debug:
+        msg: "{{ ansible_distribution_release }}"
 
-  - name: checkout yadm repo (root) [xenial]
-    command: yadm clone https://github.com/aaroneg/yadm-files.git
-    args:
-      creates: ~/.config/yadm/repo.git
-    become: yes
-    become_method: sudo
-    when: ansible_facts['lsb']['codename']=='xenial'
+    - name: checkout yadm repo [focal]
+      command: yadm clone https://github.com/aaroneg/yadm-files.git
+      args:
+        creates: ~/.config/yadm/repo.git
+      become: no
+      when: ansible_facts['distribution_release']=='focal'
 
-  - name: checkout yadm repo [bionic]
-    command: yadm clone https://github.com/aaroneg/yadm-files.git
-    args:
-      creates: ~/.yadm/repo.git
-    become: no
-    when: ansible_facts['lsb']['codename']=='bionic'
+    - name: checkout yadm repo (root) [focal]
+      command: yadm clone https://github.com/aaroneg/yadm-files.git
+      args:
+        creates: ~/.config/yadm/repo.git
+      become: yes
+      become_method: sudo
+      when: ansible_facts['distribution_release']=='focal'
+
+    - name: checkout yadm repo [bionic]
+      command: yadm clone https://github.com/aaroneg/yadm-files.git
+      args:
+        creates: ~/.yadm/
+      become: no
+      when: ansible_facts['distribution_release']=='bionic'
+
 ```
 
 `~/playbooks/yadm-pull.yml`:
@@ -70,7 +75,7 @@ Example Playbooks to sync my preferred dotfiles:
 ---
 - name: update yadm files
   hosts: all
-
+  gather_facts: no
   tasks:
 
   - name: update yadm
